@@ -1,11 +1,22 @@
 {{ ansible_managed | comment }}
+acl gearboxes {
+    192.168.0.0/16;
+    localhost;
+    localnets;
+};
 options {
   directory "{{ dns_datadir }}";
-  dnssec-validation auto;
-  auth-nxdomain no;
+  auth-nxdomain no;   # RFC1035 conforming
   listen-on { any; };
   listen-on-v6 { any; };
-  allow-query { any; };
+  allow-query { gearboxes; };
+  forwarders {
+    9.9.9.9;
+    8.8.8.8;
+  };
+  forward only;
+  dnssec-enable yes;
+  dnssec-validation yes;
 };
 
 {% if dns_caching_dns is defined %}
